@@ -1,35 +1,25 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
-export default function ChatInput({ onSend, disabled }) {
-  const [input, setInput] = useState("");
+export default function ChatInput({ onSend }) {
+  const [value, setValue] = useState("");
 
-  const handleSend = () => {
-    if (!input.trim() || disabled) return;
-    onSend(input.trim());
-    setInput("");
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
+  function handleSubmit(e) {
+    e.preventDefault();
+    const trimmed = value.trim();
+    if (!trimmed) return;
+    onSend(trimmed);
+    setValue("");
+  }
 
   return (
-    <div className="chat-input-bar">
+    <form className="chat-input-container" onSubmit={handleSubmit}>
       <input
-        className="chat-input"
+        type="text"
         placeholder="Type your message..."
-        value={input}
-        disabled={disabled}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={handleKeyDown}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
       />
-
-      <button className="send-btn" onClick={handleSend} disabled={disabled}>
-        Send
-      </button>
-    </div>
+      <button type="submit">Send</button>
+    </form>
   );
 }

@@ -1,97 +1,259 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ChatMessage from "./components/ChatMessage";
 import ChatInput from "./components/ChatInput";
+import { AZURE_LANGUAGES } from "./languages";
 import "./App.css";
+import logo from "./civicchatlogo.png";
 
-const LANGUAGE_OPTIONS = [
-  { code: "en", label: "English" },
-  { code: "es", label: "Spanish" },
-  { code: "bn", label: "Bengali" },
-  { code: "zh-Hans", label: "Chinese (Simplified)" },
-  { code: "zh-Hant", label: "Chinese (Traditional)" },
-  { code: "hi", label: "Hindi" },
-  { code: "ur", label: "Urdu" },
-  { code: "ar", label: "Arabic" },
-  { code: "fr", label: "French" },
-  { code: "pt", label: "Portuguese" },
-  { code: "ru", label: "Russian" },
-  { code: "de", label: "German" },
-  { code: "it", label: "Italian" },
-  { code: "ja", label: "Japanese" },
-  { code: "ko", label: "Korean" },
-  { code: "tr", label: "Turkish" },
-  { code: "vi", label: "Vietnamese" },
-  { code: "sw", label: "Swahili" }
-];
+export default function App() {
+  // -------------------------
+  // LOCAL STORAGE HELPERS
+  // -------------------------
 
-function App() {
-  const [messages, setMessages] = useState([]);
-  const [language, setLanguage] = useState("en");
-  const [isSending, setIsSending] = useState(false);
-
-  const sendMessage = async (userMessage) => {
-    setMessages((prev) => [...prev, { sender: "user", text: userMessage }]);
-
-    // TEMPORARY MOCK (backend will replace this)
-    setIsSending(true);
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        { sender: "bot", text: `Searching DC data (mock)… [${language}]` }
-      ]);
-      setIsSending(false);
-    }, 700);
+  const loadStoredChats = () => {
+    const stored = localStorage.getItem("civicchat_chats");
+    return stored ? JSON.parse(stored) : [];
   };
 
-  return (
-    <div className="app-root">
-      <div className="chat-shell">
+  const loadStoredActiveChat = () => {
+    const stored = localStorage.getItem("civicchat_active");
+    return stored
+      ? JSON.parse(stored)
+      : {
+          id: Date.now(),
+          title: "New Chat",
+          messages: [],
+        };
+  };
 
-        {/* HEADER */}
-        <header className="chat-header">
-          <div className="chat-header-main">
-            <h1 className="chat-title">CivicChat DC</h1>
-            <p className="chat-subtitle">
-              Ask questions about elections, ballot items, and community services.
+  const saveChats = (chats) => {
+    localStorage.setItem("civicchat_chats", JSON.stringify(chats));
+  };
+
+  const saveActiveChat = (chat) => {
+    localStorage.setItem("civicchat_active", JSON.stringify(chat));
+  };
+
+  // -------------------------
+  // STATE
+  // -------------------------
+
+  const [chats, setChats] = useState(loadStoredChats());
+  const [activeChat, setActiveChat] = useState(loadStoredActiveChat());
+  const [language, setLanguage] = useState("en");
+
+  // Modals for rename
+  const [renameChatId, setRenameChatId] = useState(null);
+  const [renameValue, setRenameValue] = useState("");
+
+  // -------------------------
+  // EFFECT: Save on change
+  // -------------------------
+
+  useEffect(() => {
+    saveChats(chats);
+  }, [chats]);
+
+  useEffect(() => {
+    saveActiveChat(activeChat);
+  }, [activeChat]);
+
+  // -------------------------
+  // CHAT ACTIONS
+  // -------------------------
+
+  const startNewChat = () => {
+    const newChat = {
+      id: Date.now(),
+      title: "New Chat",
+      messages: [],
+    };
+    setActiveChat(newChat);
+    setChats([...chats, newChat]);
+  };
+
+  const switchChat = (chatId) => {
+    const found = chats.find((c) => c.id === chatId);
+    if (found) {
+      setActiveChat(found);
+    }
+  };
+
+  const deleteChat = (chatId) => {
+    const updated = chats.filter((c) => c.id !== chatId);
+    setChats(updated);
+
+    // If deleting active chat, switch to another or create new
+    if (activeChat.id === chatId) {
+      if (updated.length > 0) {
+        setActiveChat(updated[0]);
+      } else {
+        startNewChat();
+      }
+    }
+  };
+
+  const clearAllChats = () => {
+    setChats([]);
+    startNewChat();
+  };
+
+  const openRenameModal = (chat) => {
+    setRenameChatId(chat.id);
+    setRenameValue(chat.title);
+  };
+
+  const applyRename = () => {
+    const updatedChats = chats.map((c) =>
+      c.id === renameChatId ? { ...c, title: renameValue } : c
+    );
+
+    let updatedActive = activeChat;
+    if (activeChat.id === renameChatId) {
+      updatedActive = { ...activeChat, title: renameValue };
+      setActiveChat(updatedActive);
+    }
+
+    setChats(updatedChats);
+    setRenameChatId(null);
+    setRenameValue("");
+  };
+
+  // -------------------------
+  // SEND MESSAGE
+  // -------------------------
+
+  const sendMessage = async (userMessage) => {
+    // Add user message
+    const updatedChat = {
+      ...activeChat,
+      messages: [...activeChat.messages, { sender: "user", text: userMessage }],
+    };
+
+    setActiveChat(updatedChat);
+
+    // Fake "typing" response
+    setTimeout(() => {
+      const botResponse = {
+        sender: "bot",
+        text: `Searching DC data (mock)... [${language}]`,
+      };
+
+      const updatedWithBot = {
+        ...updatedChat,
+        messages: [...updatedChat.messages, botResponse],
+      };
+
+      setActiveChat(updatedWithBot);
+
+      // Update stored chat in list
+      setChats((prev) =>
+        prev.map((c) => (c.id === updatedWithBot.id ? updatedWithBot : c))
+      );
+    }, 500);
+  };
+
+  // -------------------------
+  // RENDER
+  // -------------------------
+
+  return (
+    <div className="app-container">
+      {/* ------------------------------------
+          SIDEBAR
+      ------------------------------------ */}
+      <div className="sidebar">
+        <div className="sidebar-header">
+          <img src={logo} className="logo" alt="logo" />
+          <h2>CivicChat</h2>
+        </div>
+
+        <button className="new-chat-btn" onClick={startNewChat}>
+          + New chat
+        </button>
+
+        <button className="clear-chats-btn" onClick={clearAllChats}>
+          Clear all chats
+        </button>
+
+        <div className="chat-history">
+          {chats.length === 0 && <p>Your previous chats will appear here.</p>}
+
+          {chats.map((chat) => (
+            <div
+              key={chat.id}
+              className={`history-item ${
+                chat.id === activeChat.id ? "active-chat" : ""
+              }`}
+              onClick={() => switchChat(chat.id)}
+            >
+              <span>{chat.title}</span>
+
+              <div className="chat-actions" onClick={(e) => e.stopPropagation()}>
+                <button onClick={() => openRenameModal(chat)}>Edit </button>
+                <button onClick={() => deleteChat(chat.id)}>Delete</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ------------------------------------
+          MAIN CHAT AREA
+      ------------------------------------ */}
+      <div className="chat-area">
+        <div className="chat-header">
+          <div>
+            <h1>{activeChat.title}</h1>
+            <p className="subtitle">
+              A reliable space to ask questions about elections, ballot items,
+              and local services.
             </p>
           </div>
 
-          <div className="language-block">
-            <span>Language</span>
+          <div className="language-selector">
             <select
-              className="language-select"
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
             >
-              {LANGUAGE_OPTIONS.map((lang) => (
+              {AZURE_LANGUAGES.map((lang) => (
                 <option key={lang.code} value={lang.code}>
-                  {lang.label}
+                  {lang.name}
                 </option>
               ))}
             </select>
           </div>
-        </header>
+        </div>
 
-        {/* CHAT WINDOW */}
-        <main className="chat-window">
-          {messages.length === 0 ? (
-            <div className="chat-empty">
-              Ask: “Where do I vote?” or “What’s on my ballot?”
-            </div>
-          ) : (
-            messages.map((msg, i) => (
-              <ChatMessage key={i} sender={msg.sender} text={msg.text} />
-            ))
-          )}
-          {isSending && <ChatMessage sender="bot" text="Thinking… ●●●" />}
-        </main>
+        <div className="chat-window">
+          {activeChat.messages.map((msg, i) => (
+            <ChatMessage key={i} sender={msg.sender} text={msg.text} />
+          ))}
+        </div>
 
-        {/* INPUT */}
-        <ChatInput onSend={sendMessage} disabled={isSending} />
-
+        <ChatInput onSend={sendMessage} />
       </div>
+
+      {/* ------------------------------------
+          RENAME MODAL
+      ------------------------------------ */}
+      {renameChatId !== null && (
+        <div className="modal-background">
+          <div className="modal">
+            <h3>Rename chat</h3>
+
+            <input
+              value={renameValue}
+              onChange={(e) => setRenameValue(e.target.value)}
+            />
+
+            <div className="modal-buttons">
+              <button onClick={applyRename}>Save</button>
+              <button onClick={() => setRenameChatId(null)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
-export default App;
