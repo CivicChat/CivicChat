@@ -1,0 +1,9 @@
+{
+  "id": "elections_08",
+  "title": "What is Ranked Choice Voting?",
+  "category": "elections",
+  "tags": ["ranked choice voting", "rcv", "voting systems"],
+  "content": "Ranked Choice Voting (RCV) lets voters rank candidates in order of preference instead of choosing only one. If no candidate gets a majority, the lowest-ranked candidates are eliminated and votes are redistributed until someone wins. Washington DC does not currently use Ranked Choice Voting. DC ballots use a simple 'choose one' system for each race.",
+  "sources": ["https://fairvote.org"]
+}
+
