@@ -1,0 +1,8 @@
+{
+  "id": "local_gov_07",
+  "title": "Who Represents Me in DC?",
+  "category": "local",
+  "tags": ["representatives", "ward lookup"],
+  "content": "Your local representatives include your Ward Councilmember, At-Large Councilmembers, and ANC Commissioners. You can find your representatives using your home address on the DC government website.",
+  "sources": ["https://dccouncil.gov/ward"]
+}
