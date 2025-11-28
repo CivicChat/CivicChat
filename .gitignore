@@ -1,1 +1,6 @@
 civicchat-rl-env/
+# Secrets
+.env
+backend/.env
+frontend/.env
+node_modules

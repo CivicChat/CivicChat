@@ -1,10 +1,17 @@
-// frontend/src/App.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ChatMessage from "./components/ChatMessage";
 import ChatInput from "./components/ChatInput";
 import { AZURE_LANGUAGES } from "./languages";
 import "./App.css";
 import logo from "./civicchatlogo.png";
+
+const SUGGESTED_QUESTIONS = [
+  "Who is the mayor?",
+  "How do I register to vote?",
+  "Where is my polling place?",
+  "What elections are coming up?",
+  "What is on the ballot?"
+];
 
 export default function App() {
   // -------------------------
@@ -42,15 +49,14 @@ export default function App() {
   const [chats, setChats] = useState(loadStoredChats());
   const [activeChat, setActiveChat] = useState(loadStoredActiveChat());
   const [language, setLanguage] = useState("en");
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
 
-  // Modals for rename
   const [renameChatId, setRenameChatId] = useState(null);
   const [renameValue, setRenameValue] = useState("");
 
+  const chatWindowRef = useRef(null);
+
   // -------------------------
-  // EFFECT: Save on change
+  // EFFECT: SAVE ON CHANGE + AUTOSCROLL
   // -------------------------
 
   useEffect(() => {
@@ -60,6 +66,13 @@ export default function App() {
   useEffect(() => {
     saveActiveChat(activeChat);
   }, [activeChat]);
+
+  useEffect(() => {
+    if (chatWindowRef.current) {
+      chatWindowRef.current.scrollTop =
+        chatWindowRef.current.scrollHeight;
+    }
+  }, [activeChat.messages]);
 
   // -------------------------
   // CHAT ACTIONS
@@ -72,7 +85,7 @@ export default function App() {
       messages: [],
     };
     setActiveChat(newChat);
-    setChats([...chats, newChat]);
+    setChats((prev) => [...prev, newChat]);
   };
 
   const switchChat = (chatId) => {
@@ -86,7 +99,6 @@ export default function App() {
     const updated = chats.filter((c) => c.id !== chatId);
     setChats(updated);
 
-    // If deleting active chat, switch to another or create new
     if (activeChat.id === chatId) {
       if (updated.length > 0) {
         setActiveChat(updated[0]);
@@ -123,67 +135,84 @@ export default function App() {
   };
 
   // -------------------------
-  // SEND MESSAGE (REAL BACKEND)
+  // SEND MESSAGE + SUGGESTION CLICK
   // -------------------------
 
   const sendMessage = async (userMessage) => {
-    if (!userMessage.trim()) return;
-
-    setErrorMsg("");
-    setIsLoading(true);
-
-    // 1) Add user message optimistically
-    const newUserMsg = { sender: "user", text: userMessage };
     const updatedChat = {
       ...activeChat,
-      messages: [...activeChat.messages, newUserMsg],
+      messages: [
+        ...activeChat.messages,
+        { sender: "user", text: userMessage },
+      ],
     };
+
     setActiveChat(updatedChat);
+    setChats((prev) =>
+      prev.map((c) => (c.id === updatedChat.id ? updatedChat : c))
+    );
+
+    const typingBubble = {
+      sender: "bot",
+      text: "Thinking…",
+    };
+
+    const chatWithTyping = {
+      ...updatedChat,
+      messages: [...updatedChat.messages, typingBubble],
+    };
+
+    setActiveChat(chatWithTyping);
+    setChats((prev) =>
+      prev.map((c) => (c.id === chatWithTyping.id ? chatWithTyping : c))
+    );
 
     try {
-      // Build simple history for backend (user/assistant only)
-      const history = updatedChat.messages.map((m) => ({
-        role: m.sender === "bot" ? "assistant" : "user",
-        content: m.text,
-      }));
-
-      const resp = await fetch("http://localhost:8000/api/chat", {
+      const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: userMessage,
-          language,
-          history,
+          lang: language,
+          chatId: activeChat.id,
         }),
       });
 
-      if (!resp.ok) {
-        const err = await resp.json().catch(() => ({}));
-        throw new Error(err.detail || "Backend error");
-      }
+      const data = await res.json();
 
-      const data = await resp.json();
-
-      const botResponse = {
-        sender: "bot",
-        text: data.answer,
-      };
-
-      const updatedWithBot = {
+      const finalChat = {
         ...updatedChat,
-        messages: [...updatedChat.messages, botResponse],
+        messages: [
+          ...updatedChat.messages,
+          { sender: "bot", text: data.reply || "(No response)" },
+        ],
       };
 
-      setActiveChat(updatedWithBot);
+      setActiveChat(finalChat);
       setChats((prev) =>
-        prev.map((c) => (c.id === updatedWithBot.id ? updatedWithBot : c))
+        prev.map((c) => (c.id === finalChat.id ? finalChat : c))
       );
-    } catch (err) {
-      console.error(err);
-      setErrorMsg(err.message || "Something went wrong talking to CivicChat.");
-    } finally {
-      setIsLoading(false);
+    } catch (e) {
+      const errorChat = {
+        ...updatedChat,
+        messages: [
+          ...updatedChat.messages,
+          {
+            sender: "bot",
+            text: "Sorry, something went wrong with CivicChat.",
+          },
+        ],
+      };
+
+      setActiveChat(errorChat);
+      setChats((prev) =>
+        prev.map((c) => (c.id === errorChat.id ? errorChat : c))
+      );
     }
+  };
+
+  const handleSuggestedClick = (text) => {
+    sendMessage(text);
   };
 
   // -------------------------
@@ -192,13 +221,18 @@ export default function App() {
 
   return (
     <div className="app-container">
-      {/* ------------------------------------
-          SIDEBAR
-      ------------------------------------ */}
+
+      {/* SIDEBAR */}
       <div className="sidebar">
         <div className="sidebar-header">
           <img src={logo} className="logo" alt="logo" />
-          <h2>CivicChat</h2>
+          <div>
+            <h2>CivicChat</h2>
+            <p className="sidebar-subtitle">
+              A reliable space to ask questions about elections, ballot items,
+              and local services.
+            </p>
+          </div>
         </div>
 
         <button className="new-chat-btn" onClick={startNewChat}>
@@ -222,8 +256,11 @@ export default function App() {
             >
               <span>{chat.title}</span>
 
-              <div className="chat-actions" onClick={(e) => e.stopPropagation()}>
-                <button onClick={() => openRenameModal(chat)}>Edit </button>
+              <div
+                className="chat-actions"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button onClick={() => openRenameModal(chat)}>Edit</button>
                 <button onClick={() => deleteChat(chat.id)}>Delete</button>
               </div>
             </div>
@@ -231,48 +268,54 @@ export default function App() {
         </div>
       </div>
 
-      {/* ------------------------------------
-          MAIN CHAT AREA
-      ------------------------------------ */}
+      {/* MAIN CHAT AREA */}
       <div className="chat-area">
         <div className="chat-header">
           <div>
             <h1>{activeChat.title}</h1>
-            <p className="subtitle">
-              A reliable space to ask questions about elections, ballot items,
-              and local services.
-            </p>
           </div>
 
-        <div className="language-selector">
-          <select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-          >
-            {AZURE_LANGUAGES.map((lang) => (
-              <option key={lang.code} value={lang.code}>
-                {lang.name}
-              </option>
-            ))}
-          </select>
-        </div>
+          <div className="language-selector">
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+            >
+              {AZURE_LANGUAGES.map((lang) => (
+                <option key={lang.code} value={lang.code}>
+                  {lang.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        <div className="chat-window">
+        {/* SUGGESTED QUESTIONS */}
+        <div className="suggestions">
+          <p className="suggestion-title">Suggested questions</p>
+          <div className="suggestion-buttons">
+            {SUGGESTED_QUESTIONS.map((q) => (
+              <button
+                key={q}
+                className="suggestion-btn"
+                onClick={() => handleSuggestedClick(q)}
+              >
+                {q}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* CHAT WINDOW */}
+        <div className="chat-window" ref={chatWindowRef}>
           {activeChat.messages.map((msg, i) => (
             <ChatMessage key={i} sender={msg.sender} text={msg.text} />
           ))}
-
-          {isLoading && <div className="typing-indicator">CivicChat is thinking…</div>}
-          {errorMsg && <div className="error-banner">{errorMsg}</div>}
         </div>
 
-        <ChatInput onSend={sendMessage} disabled={isLoading} />
+        <ChatInput onSend={sendMessage} />
       </div>
 
-      {/* ------------------------------------
-          RENAME MODAL
-      ------------------------------------ */}
+      {/* RENAME MODAL */}
       {renameChatId !== null && (
         <div className="modal-background">
           <div className="modal">
