@@ -6,11 +6,11 @@ import "./App.css";
 import logo from "./civicchatlogo.png";
 
 const SUGGESTED_QUESTIONS = [
-  "Who is the mayor?",
-  "How do I register to vote?",
+  "Who is the current mayor of Washington D.C.?",
+  "How do I register to vote in D.C.?",
   "Where is my polling place?",
-  "What elections are coming up?",
-  "What is on the ballot?"
+  "What elections are coming up in D.C?",
+  "What is a Primary Election?"
 ];
 
 export default function App() {
@@ -56,16 +56,11 @@ export default function App() {
   const chatWindowRef = useRef(null);
 
   // -------------------------
-  // EFFECT: SAVE ON CHANGE + AUTOSCROLL
+  // EFFECTS
   // -------------------------
 
-  useEffect(() => {
-    saveChats(chats);
-  }, [chats]);
-
-  useEffect(() => {
-    saveActiveChat(activeChat);
-  }, [activeChat]);
+  useEffect(() => saveChats(chats), [chats]);
+  useEffect(() => saveActiveChat(activeChat), [activeChat]);
 
   useEffect(() => {
     if (chatWindowRef.current) {
@@ -84,15 +79,13 @@ export default function App() {
       title: "New Chat",
       messages: [],
     };
-    setActiveChat(newChat);
     setChats((prev) => [...prev, newChat]);
+    setActiveChat(newChat);
   };
 
   const switchChat = (chatId) => {
     const found = chats.find((c) => c.id === chatId);
-    if (found) {
-      setActiveChat(found);
-    }
+    if (found) setActiveChat(found);
   };
 
   const deleteChat = (chatId) => {
@@ -100,11 +93,8 @@ export default function App() {
     setChats(updated);
 
     if (activeChat.id === chatId) {
-      if (updated.length > 0) {
-        setActiveChat(updated[0]);
-      } else {
-        startNewChat();
-      }
+      if (updated.length > 0) setActiveChat(updated[0]);
+      else startNewChat();
     }
   };
 
@@ -123,10 +113,8 @@ export default function App() {
       c.id === renameChatId ? { ...c, title: renameValue } : c
     );
 
-    let updatedActive = activeChat;
     if (activeChat.id === renameChatId) {
-      updatedActive = { ...activeChat, title: renameValue };
-      setActiveChat(updatedActive);
+      setActiveChat({ ...activeChat, title: renameValue });
     }
 
     setChats(updatedChats);
@@ -135,10 +123,12 @@ export default function App() {
   };
 
   // -------------------------
-  // SEND MESSAGE + SUGGESTION CLICK
+  // SEND MESSAGE
   // -------------------------
 
   const sendMessage = async (userMessage) => {
+
+    // 1. Add user message
     const updatedChat = {
       ...activeChat,
       messages: [
@@ -152,14 +142,13 @@ export default function App() {
       prev.map((c) => (c.id === updatedChat.id ? updatedChat : c))
     );
 
-    const typingBubble = {
-      sender: "bot",
-      text: "Thinking…",
-    };
-
+    // 2. Typing bubble
     const chatWithTyping = {
       ...updatedChat,
-      messages: [...updatedChat.messages, typingBubble],
+      messages: [
+        ...updatedChat.messages,
+        { sender: "bot", text: "Thinking…", sources: [] },
+      ],
     };
 
     setActiveChat(chatWithTyping);
@@ -168,6 +157,7 @@ export default function App() {
     );
 
     try {
+      // 3. Call backend
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -180,11 +170,16 @@ export default function App() {
 
       const data = await res.json();
 
+      // 4. Final response (replace typing bubble)
       const finalChat = {
         ...updatedChat,
         messages: [
           ...updatedChat.messages,
-          { sender: "bot", text: data.reply || "(No response)" },
+          {
+            sender: "bot",
+            text: data.reply || "(No response)",
+            sources: data.sources || [],
+          },
         ],
       };
 
@@ -193,6 +188,7 @@ export default function App() {
         prev.map((c) => (c.id === finalChat.id ? finalChat : c))
       );
     } catch (e) {
+      // Error bubble replacement
       const errorChat = {
         ...updatedChat,
         messages: [
@@ -200,6 +196,7 @@ export default function App() {
           {
             sender: "bot",
             text: "Sorry, something went wrong with CivicChat.",
+            sources: [],
           },
         ],
       };
@@ -211,9 +208,7 @@ export default function App() {
     }
   };
 
-  const handleSuggestedClick = (text) => {
-    sendMessage(text);
-  };
+  const handleSuggestedClick = (text) => sendMessage(text);
 
   // -------------------------
   // RENDER
@@ -268,12 +263,10 @@ export default function App() {
         </div>
       </div>
 
-      {/* MAIN CHAT AREA */}
+      {/* MAIN AREA */}
       <div className="chat-area">
         <div className="chat-header">
-          <div>
-            <h1>{activeChat.title}</h1>
-          </div>
+          <h1>{activeChat.title}</h1>
 
           <div className="language-selector">
             <select
@@ -308,7 +301,12 @@ export default function App() {
         {/* CHAT WINDOW */}
         <div className="chat-window" ref={chatWindowRef}>
           {activeChat.messages.map((msg, i) => (
-            <ChatMessage key={i} sender={msg.sender} text={msg.text} />
+            <ChatMessage
+              key={i}
+              sender={msg.sender}
+              text={msg.text}
+              sources={msg.sources}
+            />
           ))}
         </div>
 

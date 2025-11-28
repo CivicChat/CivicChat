@@ -5,8 +5,18 @@ const router = express.Router();
 const { searchDocuments } = require("../services/AzureSearch");
 const { generateAnswer } = require("../services/AzureOpenAI");
 
-// POST /api/chat
+// Test route
+router.get("/test", (req, res) => {
+  res.json({
+    status: "ok",
+    message: "Chat API test route working!",
+  });
+});
+
+// Main chat route
 router.post("/", async (req, res) => {
+  console.log("Received /api/chat request:", req.body);
+
   const { message, lang, chatId } = req.body;
 
   if (!message) {
@@ -14,10 +24,10 @@ router.post("/", async (req, res) => {
   }
 
   try {
-    // 1. Search Azure Cognitive Search index with the user's message
+    // 1. Search Azure Cognitive Search
     const searchResults = await searchDocuments(message);
 
-    // 2. Generate an answer using Azure OpenAI + the retrieved docs
+    // 2. Generate answer via Azure OpenAI
     const answer = await generateAnswer({
       userMessage: message,
       lang: lang || "en",
@@ -27,10 +37,9 @@ router.post("/", async (req, res) => {
 
     return res.json({ reply: answer });
   } catch (err) {
-    console.error("Error in /api/chat:", err?.response?.data || err.message);
+    console.error("Error in /api/chat:", err);
     return res.status(500).json({
-      reply:
-        "Sorry, something went wrong while contacting CivicChat's civic knowledge base.",
+      reply: "Sorry, something went wrong while contacting CivicChat's services.",
     });
   }
 });

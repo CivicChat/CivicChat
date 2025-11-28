@@ -1,25 +1,24 @@
 import React, { useState } from "react";
 
 export default function ChatInput({ onSend }) {
-  const [value, setValue] = useState("");
+  const [message, setMessage] = useState("");
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    const trimmed = value.trim();
-    if (!trimmed) return;
-    onSend(trimmed);
-    setValue("");
-  }
+  const handleSubmit = () => {
+    if (!message.trim()) return;
+    onSend(message.trim());
+    setMessage("");
+  };
 
   return (
-    <form className="chat-input-container" onSubmit={handleSubmit}>
+    <div className="chat-input-container">
       <input
         type="text"
         placeholder="Type your message..."
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
       />
-      <button type="submit">Send</button>
-    </form>
+      <button onClick={handleSubmit}>Send</button>
+    </div>
   );
 }

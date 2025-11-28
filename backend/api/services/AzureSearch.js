@@ -1,54 +1,41 @@
-// backend/api/services/azureSearch.js
-const axios = require("axios");
+// backend/services/AzureSearch.js
+const { AzureKeyCredential, SearchClient } = require("@azure/search-documents");
+require("dotenv").config();
 
-const searchEndpoint = process.env.AZURE_SEARCH_ENDPOINT; // 
-const searchIndexName = process.env.AZURE_SEARCH_INDEX_NAME; // 
-const searchApiKey = process.env.AZURE_SEARCH_API_KEY; // admin or query key
+const endpoint = process.env.AZURE_SEARCH_ENDPOINT;
+const indexName = process.env.AZURE_SEARCH_INDEX_NAME;
+const apiKey = process.env.AZURE_SEARCH_API_KEY;
 
-if (!searchEndpoint || !searchIndexName || !searchApiKey) {
-  console.warn(
-    "⚠️ Azure Search env vars missing. Check AZURE_SEARCH_ENDPOINT, AZURE_SEARCH_INDEX_NAME, AZURE_SEARCH_API_KEY."
-  );
+// Safety check
+if (!endpoint || !indexName || !apiKey) {
+  console.error("❌ Azure Search env vars missing. Check .env file.");
 }
 
-/**
- * Search Azure Cognitive Search for relevant KB docs.
- * @param {string} query - user question
- * @param {number} top - number of docs to return
- * @returns {Promise<Array>} array of documents
- */
-async function searchDocuments(query, top = 5) {
-  const url = `${searchEndpoint}/indexes/${searchIndexName}/docs/search?api-version=2023-07-01-Preview`;
+const searchClient = new SearchClient(
+  endpoint,
+  indexName,
+  new AzureKeyCredential(apiKey)
+);
 
-  const payload = {
-    search: query,
-    top,
-    queryType: "semantic", // if index supports semantic
-    semanticConfiguration: process.env.AZURE_SEARCH_SEMANTIC_CONFIG || undefined,
-    queryLanguage: "en-us",
-  };
+async function searchDocuments(query) {
+  try {
+    const results = [];
+    const search = await searchClient.search(query, {
+      top: 5,
+      includeTotalCount: true
+    });
 
-  const headers = {
-    "Content-Type": "application/json",
-    "api-key": searchApiKey,
-  };
+    for await (const result of search.results) {
+      results.push(result.document);
+    }
 
-  const response = await axios.post(url, payload, { headers });
-
-  const hits = response.data?.value || [];
-
-  // Normalize to simple structure used by OpenAI prompt
-  return hits.map((doc) => ({
-    id: doc.id,
-    title: doc.title,
-    category: doc.category,
-    tags: doc.tags,
-    content: doc.content,
-    sources: doc.sources,
-  }));
+    return results;
+  } catch (err) {
+    console.error("Azure Search error:", err);
+    return [];
+  }
 }
 
 module.exports = {
   searchDocuments,
 };
-
