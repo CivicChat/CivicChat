@@ -4,3 +4,11 @@ civicchat-rl-env/
 backend/.env
 frontend/.env
 node_modules
+# Environment files (never commit)
+.env
+*.env
+*.env.*
+backend/.env
+backend/*.env
+frontend/.env
+frontend/*.env
