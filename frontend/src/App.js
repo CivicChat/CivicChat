@@ -1,3 +1,4 @@
+// frontend/src/App.js
 import React, { useState, useEffect } from "react";
 import ChatMessage from "./components/ChatMessage";
 import ChatInput from "./components/ChatInput";
@@ -41,6 +42,8 @@ export default function App() {
   const [chats, setChats] = useState(loadStoredChats());
   const [activeChat, setActiveChat] = useState(loadStoredActiveChat());
   const [language, setLanguage] = useState("en");
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   // Modals for rename
   const [renameChatId, setRenameChatId] = useState(null);
@@ -120,23 +123,50 @@ export default function App() {
   };
 
   // -------------------------
-  // SEND MESSAGE
+  // SEND MESSAGE (REAL BACKEND)
   // -------------------------
 
   const sendMessage = async (userMessage) => {
-    // Add user message
+    if (!userMessage.trim()) return;
+
+    setErrorMsg("");
+    setIsLoading(true);
+
+    // 1) Add user message optimistically
+    const newUserMsg = { sender: "user", text: userMessage };
     const updatedChat = {
       ...activeChat,
-      messages: [...activeChat.messages, { sender: "user", text: userMessage }],
+      messages: [...activeChat.messages, newUserMsg],
     };
-
     setActiveChat(updatedChat);
 
-    // Fake "typing" response
-    setTimeout(() => {
+    try {
+      // Build simple history for backend (user/assistant only)
+      const history = updatedChat.messages.map((m) => ({
+        role: m.sender === "bot" ? "assistant" : "user",
+        content: m.text,
+      }));
+
+      const resp = await fetch("http://localhost:8000/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: userMessage,
+          language,
+          history,
+        }),
+      });
+
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}));
+        throw new Error(err.detail || "Backend error");
+      }
+
+      const data = await resp.json();
+
       const botResponse = {
         sender: "bot",
-        text: `Searching DC data (mock)... [${language}]`,
+        text: data.answer,
       };
 
       const updatedWithBot = {
@@ -145,12 +175,15 @@ export default function App() {
       };
 
       setActiveChat(updatedWithBot);
-
-      // Update stored chat in list
       setChats((prev) =>
         prev.map((c) => (c.id === updatedWithBot.id ? updatedWithBot : c))
       );
-    }, 500);
+    } catch (err) {
+      console.error(err);
+      setErrorMsg(err.message || "Something went wrong talking to CivicChat.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // -------------------------
@@ -211,27 +244,30 @@ export default function App() {
             </p>
           </div>
 
-          <div className="language-selector">
-            <select
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-            >
-              {AZURE_LANGUAGES.map((lang) => (
-                <option key={lang.code} value={lang.code}>
-                  {lang.name}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="language-selector">
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+          >
+            {AZURE_LANGUAGES.map((lang) => (
+              <option key={lang.code} value={lang.code}>
+                {lang.name}
+              </option>
+            ))}
+          </select>
+        </div>
         </div>
 
         <div className="chat-window">
           {activeChat.messages.map((msg, i) => (
             <ChatMessage key={i} sender={msg.sender} text={msg.text} />
           ))}
+
+          {isLoading && <div className="typing-indicator">CivicChat is thinking…</div>}
+          {errorMsg && <div className="error-banner">{errorMsg}</div>}
         </div>
 
-        <ChatInput onSend={sendMessage} />
+        <ChatInput onSend={sendMessage} disabled={isLoading} />
       </div>
 
       {/* ------------------------------------
