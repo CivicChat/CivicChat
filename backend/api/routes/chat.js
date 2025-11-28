@@ -1,37 +1,38 @@
-import express from "express";
-import axios from "axios";
-
+// backend/api/routes/chat.js
+const express = require("express");
 const router = express.Router();
 
+const { searchDocuments } = require("../services/AzureSearch");
+const { generateAnswer } = require("../services/AzureOpenAI");
+
+// POST /api/chat
 router.post("/", async (req, res) => {
   const { message, lang, chatId } = req.body;
 
+  if (!message) {
+    return res.status(400).json({ reply: "No message provided." });
+  }
+
   try {
-    // Call Azure → your configured deployment
-    const azureRes = await axios.post(
-      process.env.AZURE_OPENAI_ENDPOINT + "/openai/deployments/civicchat/chat/completions?api-version=2024-06-01",
-      {
-        messages: [
-          { role: "system", content: "You are CivicChat. You answer with DC election and civic data." },
-          { role: "user", content: message }
-        ],
-        temperature: 0.3,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "api-key": process.env.AZURE_OPENAI_KEY,
-        },
-      }
-    );
+    // 1. Search Azure Cognitive Search index with the user's message
+    const searchResults = await searchDocuments(message);
 
-    const reply = azureRes.data.choices[0].message.content;
+    // 2. Generate an answer using Azure OpenAI + the retrieved docs
+    const answer = await generateAnswer({
+      userMessage: message,
+      lang: lang || "en",
+      chatId: chatId || null,
+      searchResults,
+    });
 
-    res.json({ reply });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ reply: "Error contacting Azure." });
+    return res.json({ reply: answer });
+  } catch (err) {
+    console.error("Error in /api/chat:", err?.response?.data || err.message);
+    return res.status(500).json({
+      reply:
+        "Sorry, something went wrong while contacting CivicChat's civic knowledge base.",
+    });
   }
 });
 
-export default router;
+module.exports = router;
