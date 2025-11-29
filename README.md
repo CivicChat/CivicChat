@@ -107,9 +107,6 @@ cd frontend
 npm install
 npm start
 
-yaml
-Copy code
-
 ---
 
 # Data Sources  
