@@ -126,7 +126,7 @@ No third-party or unverified data sources are used.
 - Add user personalization and accessibility features  
 - Deploy as a mobile-friendly progressive web app
 
-# Responsible AI Statement — CivicChat  
+# Responsible AI Statement  
 
 CivicChat follows responsible AI principles to ensure accuracy, neutrality, and accessibility in civic information.
 
