@@ -112,7 +112,7 @@ Copy code
 
 ---
 
-## Data Sources  
+# Data Sources  
 All data is scraped from **official government sites**, including:  
 - DC Board of Elections  
 - DC.gov agencies  
@@ -122,7 +122,7 @@ No third-party or unverified data sources are used.
 
 ---
 
-## Next Steps Roadmap  
+# Next Steps Roadmap  
 - Expand beyond DC to all U.S. states  
 - Add voice support via Azure Speech  
 - Add PDF ingestion via Azure Document Intelligence  
