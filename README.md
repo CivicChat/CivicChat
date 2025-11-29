@@ -4,11 +4,11 @@
 ---
 ![civic chat logo and tagline](intro.jpeg)
 
-## Overview  
+# Overview  
 CivicChat is an AI-powered assistant that helps people understand **local elections, ballot measures, and community services** using plain, accessible language.  
 For this MVP, we focus on **Washington, DC**, using **official government data only** to ensure neutrality and accuracy. Users can ask questions in everyday language, and our system searches real government data using Azure Cognitive Search, summarizes it with Azure OpenAI, and gives clear, neutral explanations. It's designed to help communities access civic information quickly, safely, and without misinformation.
 
-## Vision
+# Vision
 Millions of Americans struggle to understand local government structures, who represents them, how elections work, and how to navigate city services.
 CivicChat provides:
 
@@ -31,22 +31,12 @@ All content is available in **multiple languages**, supporting immigrant communi
 ---
 # Screenshots
 ![initial user interface](chatui.png)
-
-## Key Features  
-### Election & Ballot Explanations  
+## Election & Ballot Explanations  
 Summaries of ballot measures and candidate information grounded in official documents.
-
-### Azure AI Search Indexing  
-All scraped civic data is processed and indexed in Azure AI Search for fast, reliable retrieval.
-
-### GPT-4 mini Summarization  
-Answers are generated through GPT-4 mini using a RAG pipeline (Retrieval-Augmented Generation).
-
-### Multilingual Support  
-Users can switch between multiple languages with one click.
-
-### Government Service Guidance  
+## Government Service Guidance  
 Explains roles of agencies and helps residents navigate services (e.g., transportation, public works).
+
+# Key Features  
 
 ## Core Chat Experience
 - Natural-language chat interface
@@ -54,9 +44,11 @@ Explains roles of agencies and helps residents navigate services (e.g., transpor
 - Chat history saved locally
 - Clean, modern UI with sidebar navigation
 - Autoscrolling conversation window
+- Users can switch between multiple languages with one click.
 
 ## AI Reasoning + Grounding
-- Retrieval-Augmented Generation (RAG)
+- Answers are generated through GPT-4 mini using a RAG pipeline (Retrieval-Augmented Generation).
+- All scraped civic data is processed and indexed in Azure AI Search for fast, reliable retrieval.
 - Sources displayed under bot messages
 - Secure, neutral civic explanations
 
@@ -67,7 +59,7 @@ Explains roles of agencies and helps residents navigate services (e.g., transpor
 - Federal relationships (Home Rule, statehood, Congress oversight)
 - City services (DDOT, 311, trash, speed bumps, DMV)
 
-## Azure-native Cloud Architecture
+# Azure-native Cloud Architecture
 - Azure Static Web Apps (React)
 - Azure Container Apps (Node.js backend)
 - Azure Cognitive Search (semantic index)
