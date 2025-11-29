@@ -4,7 +4,7 @@
 
 ---
 
-## 🔍 Overview  
+## Overview  
 CivicChat is an AI-powered assistant that helps people understand **local elections, ballot measures, and community services** using plain, accessible language.  
 For this MVP, we focus on **Washington, DC**, using **official government data only** to ensure neutrality and accuracy. Users can ask questions in everyday language, and our system searches real government data, summarizes it with Azure OpenAI, and gives clear, neutral explanations. It's designed to help communities access civic information quickly, safely, and without misinformation.
 
@@ -20,25 +20,25 @@ All content is available in **multiple languages**, supporting immigrant communi
 
 ---
 
-## 🧩 Key Features  
-### 🗳️ Election & Ballot Explanations  
+## Key Features  
+### Election & Ballot Explanations  
 Summaries of ballot measures and candidate information grounded in official documents.
 
-### 🔎 Azure AI Search Indexing  
+### Azure AI Search Indexing  
 All scraped civic data is processed and indexed in Azure AI Search for fast, reliable retrieval.
 
-### 🤖 GPT-4 mini Summarization  
+### GPT-4 mini Summarization  
 Answers are generated through GPT-4 mini using a RAG pipeline (Retrieval-Augmented Generation).
 
-### 🌍 Multilingual Support  
+### Multilingual Support  
 Users can switch between multiple languages with one click.
 
-### 🧩 Government Service Guidance  
+### Government Service Guidance  
 Explains roles of agencies and helps residents navigate services (e.g., transportation, public works).
 
 ---
 
-## 🧠 System Architecture  
+## System Architecture  
 1. **Scrapers** collect official civic data from government sites.  
 2. **Data Processing** converts raw data into structured civic records.  
 3. **Azure AI Search** indexes all civic data.  
@@ -50,7 +50,7 @@ Architecture diagram available in `/docs/architecture.png`.
 
 ---
 
-## 🛠️ Tech Stack  
+## Tech Stack  
 ### **AI + Search**
 - Azure OpenAI GPT-4 mini  
 - Azure Cognitive Search  
@@ -86,7 +86,7 @@ Copy code
 
 ---
 
-## 🔒 Data Sources  
+## Data Sources  
 All data is scraped from **official government sites**, including:  
 - DC Board of Elections  
 - DC.gov agencies  
@@ -96,7 +96,7 @@ No third-party or unverified data sources are used.
 
 ---
 
-## 🧭 Next Steps Roadmap  
+## Next Steps Roadmap  
 - Expand beyond DC to all U.S. states  
 - Add voice support via Azure Speech  
 - Add PDF ingestion via Azure Document Intelligence  
