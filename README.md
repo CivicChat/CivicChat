@@ -29,6 +29,8 @@ Residents can ask questions like:
 All content is available in **multiple languages**, supporting immigrant communities and those with language barriers.
 
 ---
+# Screenshots
+![initial user interface](chatui.png)
 
 ## Key Features  
 ### Election & Ballot Explanations  
@@ -45,7 +47,8 @@ Users can switch between multiple languages with one click.
 
 ### Government Service Guidance  
 Explains roles of agencies and helps residents navigate services (e.g., transportation, public works).
-##Core Chat Experience
+
+## Core Chat Experience
 - Natural-language chat interface
 - Suggested starter questions
 - Chat history saved locally
@@ -57,8 +60,7 @@ Explains roles of agencies and helps residents navigate services (e.g., transpor
 - Sources displayed under bot messages
 - Secure, neutral civic explanations
 
-##Civic Datasets
-
+## Civic Datasets
 - Includes structured JSON knowledge base for:
 - Local DC government (mayor, council, ANCs, wards)
 - Elections & voting (registration, early voting, ballots)
@@ -74,6 +76,7 @@ Explains roles of agencies and helps residents navigate services (e.g., transpor
 - Azure Translator
 - Azure Key Vault
 ---
+![architecture diagram](architecture.png)
 
 ## System Architecture  
 1. **Scrapers** collect official civic data from government sites.  
@@ -83,7 +86,6 @@ Explains roles of agencies and helps residents navigate services (e.g., transpor
 5. **GPT-4 mini** summarizes content into clear, neutral responses.  
 6. **Frontend Web App** provides a clean, simple chat interface with language switching.
 
-Architecture diagram available in `/docs/architecture.png`.
 
 ---
 
