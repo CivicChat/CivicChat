@@ -1,4 +1,6 @@
+// backend/services/AzureSearch.js
 const { AzureKeyCredential, SearchClient } = require("@azure/search-documents");
+require("dotenv").config();
 
 const endpoint = process.env.AZURE_SEARCH_ENDPOINT;
 const indexName = process.env.AZURE_SEARCH_INDEX_NAME;
@@ -6,27 +8,21 @@ const apiKey = process.env.AZURE_SEARCH_API_KEY;
 
 // Safety check
 if (!endpoint || !indexName || !apiKey) {
-  console.error("[AzureSearch]  Missing required environment variables.");
+  console.error("❌ Azure Search env vars missing. Check .env file.");
 }
 
-let searchClient;
-try {
-  searchClient = new SearchClient(endpoint, indexName, new AzureKeyCredential(apiKey));
-} catch (err) {
-  console.error("[AzureSearch] Failed to initialize SearchClient:", err.message);
-}
+const searchClient = new SearchClient(
+  endpoint,
+  indexName,
+  new AzureKeyCredential(apiKey)
+);
 
 async function searchDocuments(query) {
-  if (!searchClient) {
-    console.error("[AzureSearch] SearchClient not initialized.");
-    return [];
-  }
-
   try {
     const results = [];
     const search = await searchClient.search(query, {
       top: 5,
-      includeTotalCount: true,
+      includeTotalCount: true
     });
 
     for await (const result of search.results) {
@@ -35,7 +31,7 @@ async function searchDocuments(query) {
 
     return results;
   } catch (err) {
-    console.error("[AzureSearch] Error during search:", err.response?.data || err.message);
+    console.error("Azure Search error:", err);
     return [];
   }
 }
