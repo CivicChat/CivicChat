@@ -2,6 +2,7 @@
 ### Microsoft Innovation Challenge 2025 Submission  
 
 ---
+![civic chat logo and tagline](intro.jpeg)
 
 ## Overview  
 CivicChat is an AI-powered assistant that helps people understand **local elections, ballot measures, and community services** using plain, accessible language.  
