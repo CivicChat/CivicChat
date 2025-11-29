@@ -1,20 +1,29 @@
 # CivicChat — AI-Powered Local Election & Government Assistant  
 ### Microsoft Innovation Challenge 2025 Submission  
-**Built with Azure AI Search, GPT-4 mini, custom scrapers, and multilingual support**
 
 ---
 
 ## Overview  
 CivicChat is an AI-powered assistant that helps people understand **local elections, ballot measures, and community services** using plain, accessible language.  
-For this MVP, we focus on **Washington, DC**, using **official government data only** to ensure neutrality and accuracy. Users can ask questions in everyday language, and our system searches real government data, summarizes it with Azure OpenAI, and gives clear, neutral explanations. It's designed to help communities access civic information quickly, safely, and without misinformation.
+For this MVP, we focus on **Washington, DC**, using **official government data only** to ensure neutrality and accuracy. Users can ask questions in everyday language, and our system searches real government data using Azure Cognitive Search, summarizes it with Azure OpenAI, and gives clear, neutral explanations. It's designed to help communities access civic information quickly, safely, and without misinformation.
+
+## Vision
+Millions of Americans struggle to understand local government structures, who represents them, how elections work, and how to navigate city services.
+CivicChat provides:
+
+- Transparent election information
+- Clear explanations of local/state/federal government roles
+- Guidance on city services (311, speed bumps, trash pickup, etc.)
+- Accessible civic education for multilingual communities
+- Grounded answers with verified sources
+
+Our goal is to make civic knowledge universally accessible, accurate, and local.
 
 Residents can ask questions like:
 - “Who are the candidates for Mayor?”  
 - “How does ranked-choice voting work in DC?”  
 - “How do I report a pothole?”  
 - “Explain this ballot question to me simply.”
-
-CivicChat retrieves verified information, processes it through Azure AI Search, and summarizes it with GPT-4 mini.
 
 All content is available in **multiple languages**, supporting immigrant communities and those with language barriers.
 
@@ -35,7 +44,34 @@ Users can switch between multiple languages with one click.
 
 ### Government Service Guidance  
 Explains roles of agencies and helps residents navigate services (e.g., transportation, public works).
+##Core Chat Experience
+- Natural-language chat interface
+- Suggested starter questions
+- Chat history saved locally
+- Clean, modern UI with sidebar navigation
+- Autoscrolling conversation window
 
+## AI Reasoning + Grounding
+- Retrieval-Augmented Generation (RAG)
+- Sources displayed under bot messages
+- Secure, neutral civic explanations
+
+##Civic Datasets
+
+- Includes structured JSON knowledge base for:
+- Local DC government (mayor, council, ANCs, wards)
+- Elections & voting (registration, early voting, ballots)
+- Federal relationships (Home Rule, statehood, Congress oversight)
+- City services (DDOT, 311, trash, speed bumps, DMV)
+
+## Azure-native Cloud Architecture
+- Azure Static Web Apps (React)
+- Azure Container Apps (Node.js backend)
+- Azure Cognitive Search (semantic index)
+- Azure Blob Storage (dataset storage & indexing)
+- Azure OpenAI (GPT-4o model)
+- Azure Translator
+- Azure Key Vault
 ---
 
 ## System Architecture  
