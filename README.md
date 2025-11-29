@@ -29,7 +29,7 @@ Residents can ask questions like:
 All content is available in **multiple languages**, supporting immigrant communities and those with language barriers.
 
 ---
-# Screenshots
+# User Interface
 ![initial user interface](chatui.png)
 ## Election & Ballot Explanations  
 Summaries of ballot measures and candidate information grounded in official documents.
@@ -59,14 +59,30 @@ Explains roles of agencies and helps residents navigate services (e.g., transpor
 - Federal relationships (Home Rule, statehood, Congress oversight)
 - City services (DDOT, 311, trash, speed bumps, DMV)
 
-# Azure-native Cloud Architecture
-- Azure Static Web Apps (React)
-- Azure Container Apps (Node.js backend)
-- Azure Cognitive Search (semantic index)
-- Azure Blob Storage (dataset storage & indexing)
-- Azure OpenAI (GPT-4o model)
-- Azure Translator
-- Azure Key Vault
+# Tech Stack & Azure-native Cloud Architecture
+### Frontend
+Azure Static Web Apps: Hosts the React interface for fast global delivery.
+
+### Backend
+
+Azure Container Apps (Node.js + Docker): Secure environment for the chat API, RAG logic, and search orchestration.
+
+AI + Search Services
+
+Azure OpenAI Service: GPT-4 mini for reasoning and summarization.
+
+Azure Cognitive Search: Semantic + vector search index built from your civic dataset.
+
+Azure Translator: Supports multilingual output.
+
+### Data Layer
+
+Azure Blob Storage: Stores structured civic JSON datasets and indexing input.
+
+### Security
+
+Azure Key Vault: Manages API keys and secrets securely.
+
 ---
 ![architecture diagram](architecture.png)
 
@@ -77,27 +93,6 @@ Explains roles of agencies and helps residents navigate services (e.g., transpor
 4. **Backend API** retrieves search results.  
 5. **GPT-4 mini** summarizes content into clear, neutral responses.  
 6. **Frontend Web App** provides a clean, simple chat interface with language switching.
-
-
----
-
-## Tech Stack  
-### **AI + Search**
-- Azure OpenAI GPT-4 mini  
-- Azure Cognitive Search  
-
-### **Data**
-- Custom web scrapers  
-- Official government sites (elections, agencies, public notices)
-
-### **Frontend**
-- React
-- Chat-style UI  
-- Multilingual toggle
-
-### **Backend**
-- Node.js (via npm)  
-- REST API for search + chat
 
 ---
 
@@ -138,37 +133,37 @@ No third-party or unverified data sources are used.
 
 CivicChat follows responsible AI principles to ensure accuracy, neutrality, and accessibility in civic information.
 
-## 1. Data Integrity  
+### 1. Data Integrity  
 All data comes directly from **official government websites** such as the DC Board of Elections and DC.gov agencies.  
 We do not use crowdsourced, partisan, or unofficial documents.
 
-## 2. Neutrality  
+### 2. Neutrality  
 CivicChat does not endorse candidates or political views.  
 All responses are grounded in factual civic documents retrieved through **Azure AI Search**, preventing generation of unsupported claims.
 
-## 3. Reducing Hallucinations  
+### 3. Reducing Hallucinations  
 We use Retrieval-Augmented Generation (RAG) with Azure:  
 - Search results from Azure AI Search are passed into GPT-4 mini  
 - The model is instructed to answer **only** using retrieved documents  
 - If data is missing, the assistant clearly states:  
   *“I do not have enough information to answer that.”*
 
-## 4. Transparency  
+### 4. Transparency  
 CivicChat explains where information comes from and avoids speculation.  
 Summaries reflect the content of official documents, not the model’s opinions.
 
-## 5. Multilingual Fairness  
+### 5. Multilingual Fairness  
 Multilingual responses are generated consistently using the same retrieval data, ensuring equal access across languages.  
 We avoid cultural or political assumptions in translated content.
 
-## 6. User Privacy  
+### 6. User Privacy  
 CivicChat does not collect, store, or profile personal data.  
 User queries are processed transiently and are not used for training or analytics.
 
-## 7. Accessibility  
+### 7. Accessibility  
 We design for linguistic and cognitive accessibility by simplifying complex civic jargon into clear, beginner-friendly explanations.
 CivicChat’s goal is to increase civic participation responsibly, safely, and transparently.
 
-## PowerPoint Presentation
+# PowerPoint Presentation
 [Check it here:](https://1drv.ms/p/c/9a4143438fa8b0ea/IQDa_W38meIlTp3g67rG52YTAdWdJeUOAKtVc-sB8gsm7rw?e=NOdAlL)  
 
