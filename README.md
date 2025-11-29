@@ -1,6 +1,6 @@
 # CivicChat — AI-Powered Local Election & Government Assistant  
 ### Microsoft Innovation Challenge 2025 Submission  
-
+Links: [Powerpoint](https://1drv.ms/p/c/9a4143438fa8b0ea/IQDa_W38meIlTp3g67rG52YTAdWdJeUOAKtVc-sB8gsm7rw?e=NOdAlL) | [Video](https://drive.google.com/file/d/14AHstvD7SDjgVASH1jddSSGmCKj58aqr/view) 
 ---
 ![civic chat logo and tagline](intro.jpeg)
 
@@ -164,6 +164,4 @@ User queries are processed transiently and are not used for training or analytic
 We design for linguistic and cognitive accessibility by simplifying complex civic jargon into clear, beginner-friendly explanations.
 CivicChat’s goal is to increase civic participation responsibly, safely, and transparently.
 
-# PowerPoint Presentation
-[Check it here:](https://1drv.ms/p/c/9a4143438fa8b0ea/IQDa_W38meIlTp3g67rG52YTAdWdJeUOAKtVc-sB8gsm7rw?e=NOdAlL)  
 
