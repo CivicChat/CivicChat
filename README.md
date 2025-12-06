@@ -1,5 +1,5 @@
 # CivicChat — AI-Powered Local Election & Government Assistant  
-### Microsoft Innovation Challenge 2025 Submission  
+### Microsoft Innovation November Challenge 2025 - 3rd Place Winner
 Links: [Powerpoint](https://1drv.ms/p/c/9a4143438fa8b0ea/IQDa_W38meIlTp3g67rG52YTAdWdJeUOAKtVc-sB8gsm7rw?e=NOdAlL) | [Video](https://drive.google.com/file/d/14AHstvD7SDjgVASH1jddSSGmCKj58aqr/view) 
 ---
 ![civic chat logo and tagline](intro.jpeg)
@@ -161,4 +161,16 @@ User queries are processed transiently and are not used for training or analytic
 We design for linguistic and cognitive accessibility by simplifying complex civic jargon into clear, beginner-friendly explanations.
 CivicChat’s goal is to increase civic participation responsibly, safely, and transparently.
 
+# Recognition
+
+<table>
+  <tr>
+    <td><a href="https://www.microsoft.com"><img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft Logo" width="100"/></a></td>
+  </tr>
+</table>
+
+** 3rd Place Winner — Microsoft Innovation Challenge (November 2025)**  
+CivicChatDC was recognized for its innovative use of Azure AI in civic engagement and accessibility.
+
+**Tags:** `GENSPARK` `AZURE AI SERVICES` `MICROSOFT` `MACHINE LEARNING` `ARTIFICIAL INTELLIGENCE` `INNOVATION CHALLENGE` `HACKATHON`
 
