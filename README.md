@@ -3,7 +3,7 @@
 Links: [Powerpoint](https://1drv.ms/p/c/9a4143438fa8b0ea/IQDa_W38meIlTp3g67rG52YTAdWdJeUOAKtVc-sB8gsm7rw?e=NOdAlL) | [Video](https://drive.google.com/file/d/14AHstvD7SDjgVASH1jddSSGmCKj58aqr/view) 
 ---
 <p align="center">
-  <img src="frontend/CCDC.png" alt="CivicChatDC Icon" width="120"/>
+  <img src="frontend/CCDC.png" alt="CivicChatDC Icon" width="600"/>
 </p>
 <p align="center">
   <b>CivicChatDC</b>
@@ -35,7 +35,13 @@ All content is available in **multiple languages**, supporting immigrant communi
 
 ---
 # User Interface
-![initial user interface](chatui.png)
+<p align="center">
+  <img src="frontend/chatui.png" alt="User Interface" width="800"/>
+</p>
+<p align="center">
+  <b>User Interface</b>
+</p>
+
 ## Election & Ballot Explanations  
 Summaries of ballot measures and candidate information grounded in official documents.
 ## Government Service Guidance  
@@ -87,9 +93,13 @@ Azure Blob Storage: Stores structured civic JSON datasets and indexing input.
 ### Security
 
 Azure Key Vault: Manages API keys and secrets securely.
+GitHub: Repo Secrets
 
 ---
-![architecture diagram](architecture.png)
+## Architecture Diagram
+<p align="left">
+  <img src="frontend/ccdcarchi.png" alt="Civic Chat DC - Architecture" width="800"/>
+</p>
 
 ## System Architecture  
 1. **Scrapers** collect official civic data from government sites.  
@@ -170,12 +180,23 @@ CivicChat’s goal is to increase civic participation responsibly, safely, and t
 
 <table>
   <tr>
-    <td><a href="https://www.microsoft.com"><img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft Logo" width="100"/></a></td>
+    <td><a href="https://www.microsoft.com"><img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft Logo" width="120"/></a></td>
   </tr>
 </table>
 
 ** 3rd Place Winner — Microsoft Innovation Challenge (November 2025)**  
 CivicChatDC was recognized for its innovative use of Azure AI in civic engagement and accessibility.
+
+---
+
+##  Acknowledgments
+
+We extend our heartfelt thanks to **GenSpark** for the opportunity to participate in the Microsoft Innovation Challenge — November 2025.  
+Their support and collaboration helped CivicChatDC grow into a meaningful civic engagement tool powered by Azure AI Services.
+
+Special thanks to **Microsoft** for sponsoring the hackathon and fostering innovation in public service and accessibility.
+
+---
 
 **Tags:** `GENSPARK` `AZURE AI SERVICES` `MICROSOFT` `MACHINE LEARNING` `ARTIFICIAL INTELLIGENCE` `INNOVATION CHALLENGE` `HACKATHON`
 
